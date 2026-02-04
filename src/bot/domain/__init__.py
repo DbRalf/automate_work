@@ -1,7 +1,7 @@
 #domain/__init__.py
 
-from models import Worker, HoursReport
-from exceptions import(
+from .models import Worker, HoursReport
+from .exceptions import(
     InvalidHours,
     OverTimeHours,
     LowRelativeHours,

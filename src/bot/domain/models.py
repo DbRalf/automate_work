@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from exceptions import *
+from .exceptions import *
 
 
 class Worker:
@@ -11,13 +11,13 @@ class Worker:
 
     @staticmethod
     def _valid_mail(mail: str) -> None:
-        if not "@" in mail and not ".com" in mail:
+        if not "@" in mail or not ".com" in mail:
             raise ValidMailAddress ("mail must contain @ and .com")
 
 
 class HoursReport(Worker):
     def __init__(self, name: str, mail: str, month: int, work_days: int, hours: float):
-        super().__init__(self, name, mail)
+        super().__init__(name, mail)
         # self.mail_id = ""
         self._valid_hours(hours, work_days)
         self._valid_month(month)
@@ -26,7 +26,7 @@ class HoursReport(Worker):
 
     @staticmethod
     def _valid_month(month: int) -> None:
-        if 1 <= month <= 12:
+        if 1 > month > 12:
             raise NotValidMonth ("month needs to be from 12 - 1")
 
 

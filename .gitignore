@@ -40,6 +40,7 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+nul
 # created by virtualenv automatically
 .venv/Lib
 
