@@ -1,19 +1,17 @@
 #domain/__init__.py
 
-from .models import Worker, HoursReport
+from .models import Worker, HoursReport, EmployeeRegistry
 from .exceptions import(
     InvalidHours,
-    OverTimeHours,
-    LowRelativeHours,
+
 )
 
 __all__ = [
     "Worker",
     "HoursReport",
+    "EmployeeRegistry",
+
 
     # exceptions
     "InvalidHours",
-    "OverTimeHours",
-    "LowRelativeHours",
-
 ]

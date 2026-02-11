@@ -15,14 +15,16 @@ class Worker:
             raise ValidMailAddress ("mail must contain @ and .com")
 
 
-class HoursReport(Worker):
-    def __init__(self, name: str, mail: str, month: int, work_days: int, hours: float):
-        super().__init__(name, mail)
-        # self.mail_id = ""
+class HoursReport():
+    def __init__(self, worker: Worker, month: int, work_days: int, hours: float):
+
+        self.worker = worker
+        self.full_hours = work_days * 8.4  # working day is 8.4 hours
         self._valid_hours(hours, work_days)
         self._valid_month(month)
         self.month = month
         self.hours = hours
+
 
     @staticmethod
     def _valid_month(month: int) -> None:
@@ -32,14 +34,16 @@ class HoursReport(Worker):
 
     @staticmethod
     def _valid_hours(hours: float, work_days: int) -> None:
-        full_hours = work_days * 8.4 # working day is 8.4 hours
         if hours < 0:
             raise InvalidHours ("Hours can't be negative")
-        if 0 < hours < full_hours / 2:
-            raise LowRelativeHours ("Low amount of hours for the month, half of the max")
-        if hours > full_hours:
-            raise OverTimeHours ("Overtime hours reached")
 
+
+    def hours_in_expected_range(self) -> str:
+        if 0 < self.hours < self.full_hours / 2:
+            return "under half of the max hours"
+        if self.hours > self.full_hours:
+            return "overtime hours"
+        return ""
 
 
 class EmployeeRegistry:
