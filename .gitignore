@@ -8,12 +8,15 @@ __pycache__/
 venv/
 env/
 ENV/
+.env
 
 # Distribution / packaging
 build/
 dist/
 *.egg-info/
 .eggs/
+main.py
+*.o
 
 # Installer logs
 pip-log.txt
@@ -59,3 +62,8 @@ token.json
 
 #claude
 CLAUDE.md
+
+
+# test files
+*.pdf
+*.txt
