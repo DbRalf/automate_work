@@ -9,3 +9,7 @@ class KeywordNotFound (Exception):
 class NotExpectedHours (Exception):
     """extraction is not the hours we wanted"""
     pass
+
+class FailedMailExtraction (Exception):
+    """Mail is recived and nothing got out of there"""
+    pass
