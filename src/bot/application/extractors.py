@@ -60,9 +60,6 @@ class Extractor(ABC):
         except ValueError:
             raise NotExpectedHours
 
-        if 0 > hours or hours > 250:
-            raise NotExpectedHours
-
         return hours
 
 """
