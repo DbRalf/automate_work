@@ -57,6 +57,7 @@ __pycache__/
 
 
 # mail information
+config
 credentials.json
 token.json
 
