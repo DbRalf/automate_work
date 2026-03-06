@@ -2,53 +2,67 @@ from abc import ABC, abstractmethod
 
 from .exceptions import *
 
+class Message:
+    def __init__(self, email_address: str, email_body: str, email_header: str, files):
+        self.address = email_address
+        self.body = email_body
+        self.header = email_header
+        self.files = files
+
+    def get_mail(self):
+        return self.address
+
+
 
 class Worker:
-    def __init__(self, name: str, mail: str):
-        self._valid_mail(mail)
+    def __init__(self, name: str, message: Message):
         self.name = name
-        self.mail =mail
+        self.message = message
 
     @staticmethod
     def _valid_mail(mail: str) -> None:
         if not "@" in mail or not ".com" in mail:
-            raise ValidMailAddress ("mail must contain @ and .com")
+            raise InvalidMailAddress ("mail must contain @ and .com")
 
 
-class HoursReport():
-    def __init__(self, worker: Worker, month: int, work_days: int, hours: float):
-
+class HoursReport:
+    def __init__(self, worker:Worker, work_days=None,):
+        self.work_days = work_days
         self.worker = worker
-        self.full_hours = work_days * 8.4  # working day is 8.4 hours
-        self._valid_hours(hours, work_days)
-        self._valid_month(month)
-        self.month = month
-        self.hours = hours
+        self.hours = 0
 
 
-    @staticmethod
-    def _valid_month(month: int) -> None:
-        if 1 > month > 12:
-            raise NotValidMonth ("month needs to be from 12 - 1")
+
+    # def valid_month(self, month: int) -> None:
+    #     if 1 > month > 12:
+    #         raise NotValidMonth ("month needs to be from 12 - 1")
+    #     self.month =month
 
 
-    @staticmethod
-    def _valid_hours(hours: float, work_days: int) -> None:
-        if hours < 0:
-            raise InvalidHours ("Hours can't be negative")
-
-
-    def hours_in_expected_range(self) -> str:
-        if 0 < self.hours < self.full_hours / 2:
+    def hours_in_expected_range(self, hours) -> str:
+        full_hours = self.work_days * 8.4
+        if 0 < hours < full_hours / 2:
             return "under half of the max hours"
-        if self.hours > self.full_hours:
+        if hours > full_hours:
             return "overtime hours"
         return ""
 
 
+    def valid_hours(self, hours: float) -> None:
+        if hours < 0 or self.hours_in_expected_range(hours):
+            raise InvalidHours ("Hours can't be negative")
+
+        self.hours = hours
+
+
+
+
 class EmployeeRegistry:
-    @abstractmethod  # cannot create this class + makes sure all function are implemented
-    def in_registry(self, email: str) -> bool:
-        pass
+#
+#     @abstractmethod  # cannot create this class + makes sure all function are implemented
+#     def _employ_in_registry(self, email: dict) -> str:
+    pass
+#
+
 
 
