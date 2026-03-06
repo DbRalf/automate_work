@@ -17,6 +17,7 @@ class PDFMmanager(Extractor):
 
         client = LLMWhispererClientV2(base_url='https://llmwhisperer-api.us-central.unstract.com/api/v2',
                                       api_key= API_KEY)
+        file.seek(0)
         result = client.whisper(stream=file)
 
         print("Starting pdf extraction.")
