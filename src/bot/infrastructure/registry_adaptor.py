@@ -11,15 +11,13 @@ REGISTRY_PATH = os.path.join(PROJECT_ROOT, "config", "data","workers_registry.ym
 
 class RegistryAdaptor(RegistryManager):
     def __init__(self):
-        with open(REGISTRY_PATH, 'r+') as f:
+        with open(REGISTRY_PATH, 'r', encoding='utf-8') as f:
             self.dict = yaml.safe_load(f)
 
     def get_company_name(self, email: str) ->str:
         email_list = self.dict["worker_dictionary"]
-        print(f"got mail from {email}")
-        company = email_list.get(str(email))
-        print(f"company name {company}")
-        return company
+        worker = email_list.get(str(email))
+        return worker["company_name"]
 
     # future functions : add and remove worker
     #                   change_company_name ...?

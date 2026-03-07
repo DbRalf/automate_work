@@ -14,7 +14,10 @@ CREDENTIALS_PATH = os.path.join(PROJECT_ROOT, "config", "credentials.json")
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token.json")
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = [
+          "https://www.googleapis.com/auth/gmail.readonly",
+          "https://www.googleapis.com/auth/spreadsheets"
+          ]
 
 
 def main():
@@ -43,8 +46,9 @@ def main():
 
   try:
     # Call the Gmail API
-    service = build("gmail", "v1", credentials=creds)
-    results = service.users().labels().list(userId="me").execute()
+    gmail_service = build("gmail", "v1", credentials=creds)
+    sheets_service = build("sheets", "v4", credentials=creds)
+    results = gmail_service.users().labels().list(userId="me").execute()
     labels = results.get("labels", [])
 
     if not labels:
