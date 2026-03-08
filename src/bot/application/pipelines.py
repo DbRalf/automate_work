@@ -5,7 +5,7 @@ this file contains all the functions that handle a complete event
 email reciving/sending, creating invoices or sending them and so on
 
 """
-
+from idlelib.window import registry
 from io import BytesIO
 from exceptiongroup import catch
 
@@ -14,24 +14,30 @@ from src.bot.domain.exceptions import NotInRegistry
 from src.bot.application.gmail_handler import GmailMassages
 from src.bot.application.extractors import Extractor
 from src.bot.application.Registry_manager import RegistryManager
+from src.bot.application.sheets_handler import SheetsHandler
 
 class MonthlyHours:
-    def __init__(self, gmail:GmailMassages, pdf:Extractor, registry:RegistryManager):
+    def __init__(self, gmail:GmailMassages, pdf:Extractor, registry:RegistryManager, sheets: SheetsHandler):
         self.gmail_rec = gmail
         self.pdf_processor = pdf
         self.registry = registry
+        self.sheets = sheets
 
 
     def process_mail(self):
         mail_content, files = self.gmail_rec.get_mail_info()
-        print(mail_content["From"])
-        company_name = self.registry.get_company_name(mail_content["From"])
+        sender = mail_content["From"]
+        company_name = self.registry.get_company_name(sender)
         if not company_name:
             print('email is not in the registry!')
             # in the future will skip to the next mail
             return
         hours = self.extract_files(files= files,company= company_name)
         print(f"received hours from mail: {hours}")
+
+        worker_name = self.registry.get_worker_name(sender)
+        self.sheets.write_hours(worker_name, hours)
+
 
 
     def extract_files(self, files, company) -> float:
