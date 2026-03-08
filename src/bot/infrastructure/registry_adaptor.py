@@ -19,5 +19,11 @@ class RegistryAdaptor(RegistryManager):
         worker = email_list.get(str(email))
         return worker["company_name"]
 
+    def get_worker_name(self,email: str) -> str:
+        email_list = self.dict["worker_dictionary"]
+        worker = email_list.get(str(email))
+        return worker["worker_name"]
+
+
     # future functions : add and remove worker
     #                   change_company_name ...?
