@@ -20,7 +20,8 @@ TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token.json")
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 class GmailAdaptor(GmailMassages):
-    def _build_service(self):
+    @staticmethod
+    def _build_service():
         creds = None
         if os.path.exists(TOKEN_PATH):
             creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
@@ -88,12 +89,13 @@ class GmailAdaptor(GmailMassages):
         return attachments
 
 
-    def get_mail_info(self, query: str = "has:attachment filename:pdf is:unread") -> tuple[dict, list[BytesIO]]:
+    def get_mail_info(self, query: str = "has:attachment filename:pdf is:unread") -> list[tuple[dict, list[BytesIO]]]:
         """
-        Fetch the most recent email matching *query* from Gmail.
+        Fetch all emails matching *query* from Gmail.
 
         Returns:
-            mail_info  – dict with keys: From - list of sender;cc;bcc, Subject -str, Date-str or somthing, body-str
+            list of (mail_info, attachments) tuples, one per email.
+            mail_info – dict with keys: From, Subject, Date, body
             attachments – list of BytesIO streams (one per PDF attachment)
 
         Raises:
@@ -102,20 +104,24 @@ class GmailAdaptor(GmailMassages):
         """
         service = self._build_service()
 
-        results = service.users().messages().list(userId="me", q=query, maxResults=1).execute()
+        results = service.users().messages().list(userId="me", q=query).execute()
         messages = results.get("messages", [])
         if not messages:
             raise ValueError(f"No emails found matching query: '{query}'")
 
-        message_id = messages[0]["id"]
-        message = service.users().messages().get(userId="me", id=message_id, format="full").execute()
+        mail_list = []
+        for msg in messages:
+            message_id = msg["id"]
+            message = service.users().messages().get(userId="me", id=message_id, format="full").execute()
 
-        payload = message["payload"]
-        headers = GmailAdaptor._extract_headers(payload.get("headers", []))
-        headers["body"] = GmailAdaptor._extract_body(payload)
+            payload = message["payload"]
+            headers = GmailAdaptor._extract_headers(payload.get("headers", []))
+            headers["body"] = GmailAdaptor._extract_body(payload)
 
-        attachments = GmailAdaptor._extract_attachments(service, "me", message_id, payload)
-        headers['From'] = re.findall(r"\<(.*?)\>",headers['From'])[0] #clean sender address
-        return headers, attachments
+            attachments = GmailAdaptor._extract_attachments(service, "me", message_id, payload)
+            headers['From'] = re.findall(r"\<(.*?)\>", headers['From'])[0]
+            mail_list.append((headers, attachments))
+
+        return mail_list
 
 

@@ -7,9 +7,9 @@ from io import BytesIO
 class GmailMassages(ABC):
 
     @abstractmethod
-    def get_mail_info(self, query: str = "has:attachment filename:pdf is:unread") -> tuple[dict, list[BytesIO]]:
+    def get_mail_info(self, query: str = "has:attachment filename:pdf is:unread") -> list[tuple[dict, list[BytesIO]]]:
         """
-        return the mail content, header, body, sender, files and so on
+        return a list of (mail_content, files) tuples for all matching emails
         """
         pass
 

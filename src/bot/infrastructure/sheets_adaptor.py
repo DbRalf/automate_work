@@ -15,7 +15,7 @@ CREDENTIALS_PATH = os.path.join(PROJECT_ROOT, "config", "credentials.json")
 SHEETS_TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "sheets_token.json")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-SPREADSHEET_ID = "1x9-TFDZ1atjIt4d1s9itGqCyi00t28bfLSN9OmQH5FY"
+SPREADSHEET_ID = "13VaGguIaiQcdu1TstsD3RJGg4BPZw-yzL1Xogwt_Fss"
 SHEET_NAME = "Sheet1"
 
 

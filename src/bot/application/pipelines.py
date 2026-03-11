@@ -25,27 +25,53 @@ class MonthlyHours:
 
 
     def process_mail(self):
-        mail_content, files = self.gmail_rec.get_mail_info()
-        sender = mail_content["From"]
-        company_name = self.registry.get_company_name(sender)
-        if not company_name:
-            print('email is not in the registry!')
-            # in the future will skip to the next mail
-            return
-        hours = self.extract_files(files= files,company= company_name)
-        print(f"received hours from mail: {hours}")
+        mail_list = self.gmail_rec.get_mail_info()
 
-        worker_name = self.registry.get_worker_name(sender)
-        self.sheets.write_hours(worker_name, hours)
+        # flatten the file list
+        flat_list_files = []
+        for _, files in mail_list:
+            for file in files:
+                flat_list_files.append(file)
+
+        senders =[sender["From"] for sender, _ in  mail_list]
+
+        company_names =[]
+        for sender in senders:
+            company = self.registry.get_company_name(sender)
+            if not company:
+                print('email is not in the registry!')
+                # in the future will skip to the next mail
+                continue
+            company_names.append(company)
+
+        hours = self.extract_files(files=flat_list_files, companies=company_names)
+
+        # for mail_content, files in mail_list:
+        #     sender =  mail_content["From"]
+        #     company_name = self.registry.get_company_name(sender)
+        #     if not company_name:
+        #         print('email is not in the registry!')
+        #         # in the future will skip to the next mail
+        #         continue
+        #     hours = self.extract_files(files= files,company= company_name)
+        #     print(f"received hours from mail: {hours}")
+        #
+        #     worker_name = self.registry.get_worker_name(sender)
+        #     self.sheets.write_hours(worker_name, hours)
 
 
 
-    def extract_files(self, files, company) -> float:
-        hours = 0.0
-        for file in files:
-            string_content = self.pdf_processor.extract_pdf_table(file)
-            list_content = string_content.split()
-            hours = self.pdf_processor.extract_by_name(table=list_content, company_name=company)
+    def extract_files(self, files, companies: list[str]) -> list[float]:
+
+        hours = []
+        list_of_pdf = self.pdf_processor.extract_pdf_table(files)
+        list_of_content = [string_content.split() for string_content in list_of_pdf]
+
+        for list_content, company in zip( list_of_content, companies):
+            hours.append(
+                self.pdf_processor.extract_by_name(table=list_content, company_name=company)
+            )
+            print(f"received hours from mail: {hours}")
 
         # cheack for valid hours from multiple files
 
